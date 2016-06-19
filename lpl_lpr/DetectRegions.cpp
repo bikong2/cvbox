@@ -5,43 +5,40 @@
 #include "DetectRegions.h"
 
 void DetectRegions::setFilename(string s) {
-        filename=s;
+        filename = s;
 }
 
-DetectRegions::DetectRegions(){
-    showSteps=false;
-    saveRegions=false;
+DetectRegions::DetectRegions() {
+    showSteps = false;
+    saveRegions = false;
 }
 
-bool DetectRegions::verifySizes(RotatedRect mr){
+bool DetectRegions::verifySizes(RotatedRect mr) {
 
-    float error=0.4;
-    //Spain car plate size: 52x11 aspect 4,7272
-    float aspect=4.7272;
+    float error = 0.4;
+    //Spain car plate size: 52x11 aspect 4.7272
+    float aspect = 4.7272;
     //Set a min and max area. All other patchs are discarded
-    int min= 15*aspect*15; // minimum area
-    int max= 125*aspect*125; // maximum area
+    int min = 15*aspect*15; // minimum area
+    int max = 125*aspect*125; // maximum area
     //Get only patchs that match to a respect ratio.
-    float rmin= aspect-aspect*error;
-    float rmax= aspect+aspect*error;
+    float rmin = aspect - aspect*error;
+    float rmax = aspect + aspect*error;
 
-    int area= mr.size.height * mr.size.width;
-    float r= (float)mr.size.width / (float)mr.size.height;
-    if(r<1)
-        r= (float)mr.size.height / (float)mr.size.width;
-
-    if(( area < min || area > max ) || ( r < rmin || r > rmax )){
+    int area = mr.size.height * mr.size.width;
+    float r = (float)mr.size.width / (float)mr.size.height;
+    if (r < 1)
+        r = (float)mr.size.height / (float)mr.size.width;
+    if (( area < min || area > max ) || ( r < rmin || r > rmax )) {
         return false;
-    }else{
+    } else {
         return true;
     }
-
 }
 
-Mat DetectRegions::histeq(Mat in)
-{
+Mat DetectRegions::histeq(Mat in) {
     Mat out(in.size(), in.type());
-    if(in.channels()==3){
+    if (in.channels() == 3) {
         Mat hsv;
         vector<Mat> hsvSplit;
         cvtColor(in, hsv, CV_BGR2HSV);
@@ -49,15 +46,13 @@ Mat DetectRegions::histeq(Mat in)
         equalizeHist(hsvSplit[2], hsvSplit[2]);
         merge(hsvSplit, hsv);
         cvtColor(hsv, out, CV_HSV2BGR);
-    }else if(in.channels()==1){
+    } else if (in.channels() == 1) {
         equalizeHist(in, out);
     }
-
     return out;
-
 }
 
-vector<Plate> DetectRegions::segment(Mat input){
+vector<Plate> DetectRegions::segment(Mat input) {
     vector<Plate> output;
 
     //convert image to gray
@@ -68,19 +63,19 @@ vector<Plate> DetectRegions::segment(Mat input){
     //Finde vertical lines. Car plates have high density of vertical lines
     Mat img_sobel;
     Sobel(img_gray, img_sobel, CV_8U, 1, 0, 3, 1, 0, BORDER_DEFAULT);
-    if(showSteps)
+    if (showSteps)
         imshow("Sobel", img_sobel);
 
     //threshold image
     Mat img_threshold;
     threshold(img_sobel, img_threshold, 0, 255, CV_THRESH_OTSU+CV_THRESH_BINARY);
-    if(showSteps)
+    if (showSteps)
         imshow("Threshold", img_threshold);
 
     //Morphplogic operation close
-    Mat element = getStructuringElement(MORPH_RECT, Size(17, 3) );
+    Mat element = getStructuringElement(MORPH_RECT, Size(17, 3));
     morphologyEx(img_threshold, img_threshold, CV_MOP_CLOSE, element);
-    if(showSteps)
+    if (showSteps)
         imshow("Close", img_threshold);
 
     //Find contours of possibles plates
@@ -91,16 +86,16 @@ vector<Plate> DetectRegions::segment(Mat input){
             CV_CHAIN_APPROX_NONE); // all pixels of each contours
 
     //Start to iterate to each contour founded
-    vector<vector<Point> >::iterator itc= contours.begin();
+    vector<vector<Point> >::iterator itc = contours.begin();
     vector<RotatedRect> rects;
 
     //Remove patch that are no inside limits of aspect ratio and area.    
-    while (itc!=contours.end()) {
+    while (itc != contours.end()) {
         //Create bounding rect of object
-        RotatedRect mr= minAreaRect(Mat(*itc));
-        if( !verifySizes(mr)){
-            itc= contours.erase(itc);
-        }else{
+        RotatedRect mr = minAreaRect(Mat(*itc));
+        if (!verifySizes(mr)) {
+            itc = contours.erase(itc);
+        } else {
             ++itc;
             rects.push_back(mr);
         }
@@ -114,7 +109,7 @@ vector<Plate> DetectRegions::segment(Mat input){
             cv::Scalar(255,0,0), // in blue
             1); // with a thickness of 1
 
-    for(int i=0; i< rects.size(); i++){
+    for (int i = 0; i < rects.size(); i++){
 
         //For better rect cropping for each posible box
         //Make floodfill algorithm because the plate has white background
@@ -212,5 +207,4 @@ vector<Plate> DetectRegions::run(Mat input){
     //return detected and posibles regions
     return tmp;
 }
-
 

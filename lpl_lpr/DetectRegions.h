@@ -5,14 +5,14 @@
 #ifndef DetectRegions_h
 #define DetectRegions_h
 
+#include <cv.h>
+#include <highgui.h>
+#include <cvaux.h>
+
 #include <string.h>
 #include <vector>
 
 #include "Plate.h"
-
-#include <cv.h>
-#include <highgui.h>
-#include <cvaux.h>
 
 using namespace std;
 using namespace cv;
