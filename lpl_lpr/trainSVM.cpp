@@ -21,18 +21,17 @@ int main ( int argc, char** argv )
     char* path_NoPlates;
     int numPlates;
     int numNoPlates;
-    int imageWidth=144;
-    int imageHeight=33;
+    int imageWidth = 144;
+    int imageHeight = 33;
 
     //Check if user specify image to process
-    if(argc >= 5 )
-    {
-        numPlates= atoi(argv[1]);
-        numNoPlates= atoi(argv[2]);
-        path_Plates= argv[3];
-        path_NoPlates= argv[4];
+    if (argc >= 5) {
+        numPlates = atoi(argv[1]);
+        numNoPlates = atoi(argv[2]);
+        path_Plates = argv[3];
+        path_NoPlates = argv[4];
 
-    }else{
+    } else {
         cout << "Usage:\n" << argv[0] << " <num Plate Files> <num Non Plate Files> <path to plate folder files> <path to non plate files> \n";
         return 0;
     }        
@@ -43,23 +42,22 @@ int main ( int argc, char** argv )
     Mat trainingImages;
     vector<int> trainingLabels;
 
-    for(int i=0; i< numPlates; i++)
+    for (int i = 0; i < numPlates; i++)
     {
-
         stringstream ss(stringstream::in | stringstream::out);
         ss << path_Plates << i << ".jpg";
-        Mat img=imread(ss.str(), 0);
-        img= img.reshape(1, 1);
+        Mat img = imread(ss.str(), 0);
+        img = img.reshape(1, 1);
         trainingImages.push_back(img);
         trainingLabels.push_back(1);
     }
 
-    for(int i=0; i< numNoPlates; i++)
+    for (int i = 0; i < numNoPlates; i++)
     {
         stringstream ss(stringstream::in | stringstream::out);
         ss << path_NoPlates << i << ".jpg";
-        Mat img=imread(ss.str(), 0);
-        img= img.reshape(1, 1);
+        Mat img = imread(ss.str(), 0);
+        img = img.reshape(1, 1);
         trainingImages.push_back(img);
         trainingLabels.push_back(0);
 

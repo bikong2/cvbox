@@ -93,8 +93,7 @@ int main ( int argc, char** argv )
 
     //For each possible plate, classify with svm if it's a plate or no
     vector<Plate> plates;
-    for(int i = 0; i < posible_regions.size(); i++)
-    {
+    for (int i = 0; i < posible_regions.size(); i++) {
         Mat img = posible_regions[i].plateImg;
         Mat p = img.reshape(1, 1);
         p.convertTo(p, CV_32FC1);
@@ -106,7 +105,8 @@ int main ( int argc, char** argv )
 
     cout << "Num plates detected: " << plates.size() << "\n";
     //For each plate detected, recognize it with OCR
-    OCR ocr("OCR.xml");    
+    //OCR ann model trained at init
+    OCR ocr("OCR.xml");
     ocr.saveSegments = true;
     ocr.DEBUG = false;
     ocr.filename = filename_whithoutExt;
@@ -118,21 +118,20 @@ int main ( int argc, char** argv )
         cout << "================================================\n";
         cout << "License plate number: " << licensePlate << "\n";
         cout << "================================================\n";
-        rectangle(input_image, plate.position, Scalar(0,0,200));
-        putText(input_image, licensePlate, Point(plate.position.x, plate.position.y), CV_FONT_HERSHEY_SIMPLEX, 1, Scalar(0,0,200), 2);
+        rectangle(input_image, plate.position, Scalar(0, 0, 200));
+        putText(input_image, licensePlate, Point(plate.position.x, plate.position.y), CV_FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 0, 200), 2);
         if (false) {
             imshow("Plate Detected seg", plate.plateImg);
             cvWaitKey(0);
         }
 
     }
-        imshow("Plate Detected", input_image);
-        for(;;)
-        {
-            int c;
-            c = cvWaitKey(10);
-            if( (char) c == 27)
-                break;
-        }
+    imshow("Plate Detected", input_image);
+    for(;;) {
+        int c;
+        c = cvWaitKey(10);
+        if( (char) c == 27)
+            break;
+    }
     return 0;
 }

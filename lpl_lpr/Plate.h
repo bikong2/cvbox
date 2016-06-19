@@ -5,12 +5,12 @@
 #ifndef Plate_h
 #define Plate_h
 
-#include <string.h>
-#include <vector>
-
 #include <cv.h>
 #include <highgui.h>
 #include <cvaux.h>
+
+#include <string.h>
+#include <vector>
 
 using namespace std;
 using namespace cv;

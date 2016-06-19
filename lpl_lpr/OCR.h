@@ -5,15 +5,15 @@
 #ifndef OCR_h
 #define OCR_h
 
-#include <string.h>
-#include <vector>
-
-#include "Plate.h"
-
 #include <cv.h>
 #include <highgui.h>
 #include <cvaux.h>
 #include <ml.h>
+
+#include <string.h>
+#include <vector>
+
+#include "Plate.h"
 
 using namespace std;
 using namespace cv;
